@@ -58,7 +58,8 @@
 ### Plan ###
 
 1. Basic frame with all GUI elements.
-2. Load map image. Static, add load option later.
 3. Load POI file, edit image to place POI markers, display modified image. 
+  * 
   * POI Marker should be a shape specific to that type of POI.
   * POI Marker could also include custom text to place at that point.
+2. Load map image. Static, add load option later.

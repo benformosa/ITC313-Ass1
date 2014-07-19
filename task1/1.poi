@@ -1,0 +1,7 @@
+#Test POI
+
+#name,type,lattitude,longitude
+origin,system,0351700S,1490800E
+one,test,0351701S,1490802E
+two,test,0351702S,1490803E
+

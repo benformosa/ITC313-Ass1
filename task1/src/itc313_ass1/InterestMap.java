@@ -1,3 +1,6 @@
+package itc313_ass1;
+
+import itc313_ass1.MapPanel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -9,7 +12,7 @@ public class InterestMap extends JFrame implements ActionListener {
   JFileChooser fc;
 
   public InterestMap() {
-    JPanel panel = new JPanel();
+    JPanel panel = new MapPanel();
 
     JMenuBar menuBar = new JMenuBar();
     JMenu menuFile = new JMenu("File");
