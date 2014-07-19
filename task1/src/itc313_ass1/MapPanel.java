@@ -5,6 +5,8 @@ import java.awt.*;
 import java.io.*;
 import java.lang.*;
 import javax.swing.*;
+import au.com.bytecode.opencsv.*;
+import java.util.*;
 
 /*
  * A map panel represents a section of a map, including a scale and a reference for its origin.
@@ -23,8 +25,24 @@ public class MapPanel extends JPanel {
   /*
    * Open a csv file and convert into an array of PointOfInterests.
    */
-  public static PointOfInterest[] readPOI(File file) {
-    return null;
+  public static Set<PointOfInterest> readPOI(File file) throws IOException {
+    Set<PointOfInterest> poi = new HashSet<PointOfInterest>();;
+    try {
+      CSVReader reader = new CSVReader(new FileReader(file));
+      String[] nextLine;
+      while((nextLine = reader.readNext()) != null) {
+        // Skip this line if it starts with # or is blank.
+        if(nextLine[0].startsWith("#") || nextLine[0].trim().length() <= 0) {
+          continue;
+        }
+
+        poi.add(new PointOfInterest(nextLine[0], nextLine[1], coordToSeconds(nextLine[2]), coordToSeconds(nextLine[3])));
+      }
+    } catch(IOException ex) {
+      System.err.println("Error reading file.");
+      return null;
+    }
+    return poi;
   }
 
   /*
@@ -47,7 +65,7 @@ public class MapPanel extends JPanel {
 
     // Split into cardinality and units
     String cardinality = coord.substring(coord.length() - 1);
-    String seconds = coord.substring(5, 6);
+    String seconds = coord.substring(5, 7);
     String minutes = coord.substring(3, 5);
     String degrees = coord.substring(0, 3);
 

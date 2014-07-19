@@ -23,4 +23,8 @@ public class PointOfInterest {
     this.x = x;
     this.y = y;
   }
+  
+  public String toString() {
+    return String.format("%s, %s, %d, %d", name, type, x, y);
+  }
 }
