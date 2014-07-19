@@ -12,23 +12,26 @@ public class InterestMap extends JFrame implements ActionListener {
   JFileChooser fc;
 
   public InterestMap() {
-    JPanel panel = new MapPanel();
+    try {
+      JPanel panel = new MapPanel("1.poi");
 
-    JMenuBar menuBar = new JMenuBar();
-    JMenu menuFile = new JMenu("File");
-    menuFile.setMnemonic(KeyEvent.VK_F);
+      JMenuBar menuBar = new JMenuBar();
+      JMenu menuFile = new JMenu("File");
+      menuFile.setMnemonic(KeyEvent.VK_F);
 
-    menuLoadPOI = new JMenuItem("Load Points of Interest", KeyEvent.VK_P);
-    menuLoadPOI.addActionListener(this);
-    menuFile.add(menuLoadPOI);
-    menuBar.add(menuFile);
+      menuLoadPOI = new JMenuItem("Load Points of Interest", KeyEvent.VK_P);
+      menuLoadPOI.addActionListener(this);
+      menuFile.add(menuLoadPOI);
+      menuBar.add(menuFile);
 
-    fc = new JFileChooser();
-    FileNameExtensionFilter filter = new FileNameExtensionFilter("POI Files", "poi", "csv");
-    fc.setFileFilter(filter);
+      fc = new JFileChooser();
+      FileNameExtensionFilter filter = new FileNameExtensionFilter("POI Files", "poi", "csv");
+      fc.setFileFilter(filter);
 
-    this.setJMenuBar(menuBar);
-    this.add(panel, BorderLayout.SOUTH);
+      this.setJMenuBar(menuBar);
+      this.add(panel);
+    } catch(IOException ex){
+    }
   }
 
   public static void main(String[] args) {

@@ -14,16 +14,49 @@ import java.util.*;
  */
 public class MapPanel extends JPanel {
   File file;
-  int scale; /* scale is number of seconds per pixel */
-  int[] origin;
+  Set<PointOfInterest> poi;
+
+  //TODO
+  //set scale and origin with calculated defaults
+  //implement zoom and pan based on scale and origin
+  //wrap the view around like asteroids
+
+  int scale = 1080; /* scale is number of seconds per pixel */
+  /* origin is the co-ordinates of the origin of the view which is represented by MapPanel. */
+  int xorigin = 200;
+  int yorigin = -200;
+
+  public MapPanel() {
+    super();
+  }
+
+  public MapPanel(String filename) throws IOException {
+    this(new File(filename));
+  }
+
+  public MapPanel(File file) throws IOException {
+    this.file = file;
+    this.poi = readPOI(file);
+  }
 
   @Override
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
+
+    for(PointOfInterest p: poi) {
+      // System.out.println((p.x/scale+xorigin) + ", " + (p.y/scale+yorigin));
+      g.fillOval(
+          p.x/scale - xorigin,
+          p.y/scale - yorigin,
+          10,
+          10);
+    }
   }
   
   /*
-   * Open a csv file and convert into an array of PointOfInterests.
+   * Open a csv file and convert into a Set of PointOfInterests.
+   * Columns in the csv are name, type, lattitude, longitude.
+   * Note that lattitude corresponds with the y attribute of PointOfInterest.
    */
   public static Set<PointOfInterest> readPOI(File file) throws IOException {
     Set<PointOfInterest> poi = new HashSet<PointOfInterest>();;
@@ -36,7 +69,7 @@ public class MapPanel extends JPanel {
           continue;
         }
 
-        poi.add(new PointOfInterest(nextLine[0], nextLine[1], coordToSeconds(nextLine[2]), coordToSeconds(nextLine[3])));
+        poi.add(new PointOfInterest(nextLine[0], nextLine[1], coordToSeconds(nextLine[3]), coordToSeconds(nextLine[2])));
       }
     } catch(IOException ex) {
       System.err.println("Error reading file.");
