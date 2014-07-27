@@ -20,7 +20,7 @@ public class MapPanelTest {
 
     try {
       File file = new File("1.poi");
-      Set<PointOfInterest> a = MapPanel.readPOI(file);
+      List<PointOfInterest> a = MapPanel.readPOI(file);
 
       for(PointOfInterest p : a) {
         System.out.println(p);

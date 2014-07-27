@@ -1,12 +1,13 @@
 package itc313_ass1;
 
+import au.com.bytecode.opencsv.*;
 import itc313_ass1.*;
 import java.awt.*;
 import java.io.*;
 import java.lang.*;
-import javax.swing.*;
-import au.com.bytecode.opencsv.*;
+import java.lang.Math.*;
 import java.util.*;
+import javax.swing.*;
 
 /*
  * A map panel represents a section of a map, including a scale and a reference for its origin.
@@ -14,21 +15,21 @@ import java.util.*;
  */
 public class MapPanel extends JPanel {
   File file;
-  Set<PointOfInterest> poi;
+  java.util.List<PointOfInterest> poi;
 
   //TODO
   //set scale and origin with calculated defaults
-  //implement zoom and pan based on scale and origin
   //wrap the view around like asteroids
 
   private static int PAN_DISTANCE = 1; // pan this many arcseconds by default
-  private static int ZOOM_DISTANCE = 100; // change scale by this many arcseconds by default
-  private static int MAX_ZOOM_DISTANCE = 1080; // scale should not be greater than this.
+  private static int SCALE = 100; // change scale by this many arcseconds by default
+  private static final int MAX_SCALE = 1080; // scale should not be greater than this.
 
-  int scale = MAX_ZOOM_DISTANCE; /* scale is number of seconds per pixel */
+  private int scale; /* scale is number of seconds per pixel */
   /* origin is the co-ordinates of the origin of the view which is represented by MapPanel. */
-  int xorigin = 200; /* This panel's origin is xorigin number of pixels west of the prime meridian. */
-  int yorigin = -200; /* This panel's origin is yorigin number of pixels north of the equator. */
+
+  private int xorigin; /* This panel's origin is xorigin number of pixels west of the prime meridian. */
+  private int yorigin; /* This panel's origin is yorigin number of pixels north of the equator. */
 
   public MapPanel() {
     super();
@@ -41,14 +42,44 @@ public class MapPanel extends JPanel {
   public MapPanel(File file) throws IOException {
     this.file = file;
     this.poi = readPOI(file);
+
+    // set the origin by finding the northest point and westest point
+    Collections.sort(poi);
+    int yMin = poi.get(0).getY();
+    int yMax = poi.get(poi.size() - 1).getY();
+
+    Collections.sort(poi, PointOfInterest.WestComparator);
+    int xMin = poi.get(0).getX();
+    int xMax = poi.get(poi.size() - 1).getX();
+    
+    // calculate the scale by dividing the distance between the furthest points on each axis by the size of the panel
+    scale = Math.abs(
+          Math.max(
+            (xMax - xMin) / Math.max(
+              this.getSize().width, 1
+              )
+            ,(yMax - yMin) / Math.max(
+              this.getSize().height, 1
+              )
+            )
+          );
+    if(scale > MAX_SCALE) {
+      scale = MAX_SCALE;
+    }
+
+    yorigin = yMin/scale;
+    xorigin = xMin/scale;
   }
 
   @Override
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
 
+    System.out.println("scale: " + scale);
+    System.out.println("yorigin: " + yorigin);
+    System.out.println("xorigin: " + xorigin);
+
     for(PointOfInterest p: poi) {
-      // System.out.println((p.x/scale+xorigin) + ", " + (p.y/scale+yorigin));
       g.fillOval(
           p.x/scale - xorigin,
           p.y/scale - yorigin,
@@ -58,12 +89,12 @@ public class MapPanel extends JPanel {
   }
   
   /*
-   * Open a csv file and convert into a Set of PointOfInterests.
+   * Open a csv file and convert into a java.util.List of PointOfInterests.
    * Columns in the csv are name, type, lattitude, longitude.
    * Note that lattitude corresponds with the y attribute of PointOfInterest.
    */
-  public static Set<PointOfInterest> readPOI(File file) throws IOException {
-    Set<PointOfInterest> poi = new HashSet<PointOfInterest>();;
+  public static java.util.List<PointOfInterest> readPOI(File file) throws IOException {
+    java.util.List<PointOfInterest> poi = new ArrayList<PointOfInterest>();;
     try {
       CSVReader reader = new CSVReader(new FileReader(file));
       String[] nextLine;
@@ -173,14 +204,14 @@ public class MapPanel extends JPanel {
         scale -= distance;
       }
     } else {
-      if((scale + distance) < MAX_ZOOM_DISTANCE) {
+      if((scale + distance) < MAX_SCALE) {
         scale += distance;
       }
     }
   }
 
   private void zoom(boolean in) {
-    zoom(in, ZOOM_DISTANCE);
+    zoom(in, SCALE);
   }
 
   public void zoomIn() {
