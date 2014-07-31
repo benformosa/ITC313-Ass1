@@ -8,6 +8,7 @@ import java.lang.*;
 import java.lang.Math.*;
 import java.util.*;
 import javax.swing.*;
+import java.util.Random;
 
 /*
  * A map panel represents a section of a map, including a scale and a reference for its origin.
@@ -22,8 +23,8 @@ public class MapPanel extends JPanel {
   //wrap the view around like asteroids
 
   private static int PAN_DISTANCE = 1; // pan this many arcseconds by default
-  private static int SCALE = 100; // change scale by this many arcseconds by default
-  private static final int MAX_SCALE = 1080; // scale should not be greater than this.
+  private static int SCALE = 1000; // change scale by this many arcseconds by default
+  private static final int MAX_SCALE = 360 * 60 * 60; // scale should not be greater than the number of arcseconds in a circle.
 
   private int scale; /* scale is number of seconds per pixel */
   /* origin is the co-ordinates of the origin of the view which is represented by MapPanel. */
@@ -44,14 +45,15 @@ public class MapPanel extends JPanel {
     this.poi = readPOI(file);
 
     // set the origin by finding the northest point and westest point
-    Collections.sort(poi);
-    int yMin = poi.get(0).getY();
-    int yMax = poi.get(poi.size() - 1).getY();
+    Collections.sort(poi, PointOfInterest.byY);
+    int yMin = poi.get(0).y;
+    int yMax = poi.get(poi.size() - 1).y;
 
-    Collections.sort(poi, PointOfInterest.WestComparator);
-    int xMin = poi.get(0).getX();
-    int xMax = poi.get(poi.size() - 1).getX();
+    Collections.sort(poi, PointOfInterest.byX);
+    int xMin = poi.get(0).x;
+    int xMax = poi.get(poi.size() - 1).x;
     
+    /*
     // calculate the scale by dividing the distance between the furthest points on each axis by the size of the panel
     scale = Math.abs(
           Math.max(
@@ -65,7 +67,9 @@ public class MapPanel extends JPanel {
           );
     if(scale > MAX_SCALE) {
       scale = MAX_SCALE;
-    }
+    } */
+
+    scale = 1080;
 
     yorigin = yMin/scale;
     xorigin = xMin/scale;
@@ -79,13 +83,20 @@ public class MapPanel extends JPanel {
     System.out.println("yorigin: " + yorigin);
     System.out.println("xorigin: " + xorigin);
 
+    Random rand = new Random();
+
     for(PointOfInterest p: poi) {
-      g.fillOval(
-          p.x/scale - xorigin,
-          p.y/scale - yorigin,
-          10,
-          10);
+      int px = p.x/scale - xorigin;
+      int py = p.y/scale - yorigin;
+
+      // pick a random colour
+      g.setColor(new Color(rand.nextInt(256),rand.nextInt(256),rand.nextInt(256),rand.nextInt(256)));
+      g.drawString(p.name, px, (py - 5));
+      g.fillOval(px, py, 10, 10);
+
+      System.out.println(p);
     }
+      System.out.println();
   }
   
   /*

@@ -16,7 +16,7 @@ public class InterestMap extends JFrame implements ActionListener {
 
   public InterestMap() {
     try {
-      mapPanel = new MapPanel("1.poi");
+      mapPanel = new MapPanel("cities.poi");
       toolBar = new JPanel();
 
       JMenuBar menuBar = new JMenuBar();
