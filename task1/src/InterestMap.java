@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -20,7 +21,7 @@ public class InterestMap extends JFrame implements ActionListener {
   MapPanel mapPanel;
   JPanel toolBar;
   JButton panNButton, panSButton, panEButton, panWButton, zoomInButton,
-      zoomOutButton;
+      zoomOutButton, resetButton;
 
   public InterestMap() {
     mapPanel = new MapPanel("poi.csv", "types.csv");
@@ -61,19 +62,24 @@ public class InterestMap extends JFrame implements ActionListener {
     panWButton = new JButton("←");
     zoomInButton = new JButton("+");
     zoomOutButton = new JButton("-");
+    resetButton = new JButton("↻");
     panNButton.addActionListener(this);
     panSButton.addActionListener(this);
     panEButton.addActionListener(this);
     panWButton.addActionListener(this);
     zoomInButton.addActionListener(this);
     zoomOutButton.addActionListener(this);
+    resetButton.addActionListener(this);
 
     toolBar.add(panNButton);
     toolBar.add(panSButton);
-    toolBar.add(panEButton);
     toolBar.add(panWButton);
+    toolBar.add(panEButton);
+    toolBar.add(Box.createHorizontalGlue());
     toolBar.add(zoomInButton);
     toolBar.add(zoomOutButton);
+    toolBar.add(Box.createHorizontalGlue());
+    toolBar.add(resetButton);
 
     this.setJMenuBar(menuBar);
     this.add(toolBar, BorderLayout.NORTH);
@@ -106,7 +112,12 @@ public class InterestMap extends JFrame implements ActionListener {
       mapPanel.zoomIn();
     } else if (e.getSource() == zoomOutButton) {
       mapPanel.zoomOut();
+    } else if (e.getSource() == resetButton) {
+      mapPanel.reset();
     }
+    mapPanel.revalidate();
     mapPanel.repaint();
+    InterestMap.this.revalidate();
+    InterestMap.this.repaint();
   }
 }

@@ -123,6 +123,10 @@ public class MapPanel extends JPanel {
     return colorMap(new File(filename));
   }
 
+  /*
+   * Calculate a scale based on the distribution of points and the MAX_SIZE variable
+   * If points exist with x and y around 0 and others with x and y around MAX_SIZE, scale should be around 1.
+   */
   public float getScale() {
     Collections.sort(poi, POI.byX);
     float minX = poi.get(0).x;
@@ -151,23 +155,34 @@ public class MapPanel extends JPanel {
     for (POI p : poi) {
       g2D.setColor(colors.get(p.getType()));
 
-      g2D.drawString(p.getType(), p.x, (p.y - 1));
-      g2D.fill(new Ellipse2D.Float(p.x * scale, p.y * scale, POINT_SIZE,
-          POINT_SIZE));
+      //g2D.drawString(p.getType(), p.x, (p.y - 1));
+      g2D.fill(new Ellipse2D.Float(
+            (p.x * scale) + (float) viewPoint.getX(),
+            (p.y * scale) + (float) viewPoint.getY(),
+            POINT_SIZE, POINT_SIZE));
       // g2D.fill(new Ellipse2D.Float(p.x, p.y, POINT_SIZE, POINT_SIZE));
     }
   }
 
+  public void reset() {
+    scale = 1;
+    viewPoint.setLocation(0, 0);
+    this.revalidate();
+    this.repaint();
+  }
+
   private void zoom(boolean in, int distance) {
     if (in) {
-      if ((scale - distance) >= 1) {
-        scale -= distance;
-      }
-    } else {
       if ((scale + distance) < MAX_SCALE) {
         scale += distance;
       }
+    } else {
+      if ((scale - distance) >= 1) {
+        scale -= distance;
+      }
     }
+    this.revalidate();
+    this.repaint();
   }
 
   private void zoom(boolean in) {
@@ -185,10 +200,10 @@ public class MapPanel extends JPanel {
   private void pan(char direction, int distance) {
     switch (direction) {
       case 'n':
-        viewPoint.setLocation(viewPoint.getX(), viewPoint.getY() + distance);
+        viewPoint.setLocation(viewPoint.getX(), viewPoint.getY() - distance);
         break;
       case 's':
-        viewPoint.setLocation(viewPoint.getX(), viewPoint.getY() - distance);
+        viewPoint.setLocation(viewPoint.getX(), viewPoint.getY() + distance);
         break;
       case 'e':
         viewPoint.setLocation(viewPoint.getX() + distance, viewPoint.getY());
@@ -197,6 +212,8 @@ public class MapPanel extends JPanel {
         viewPoint.setLocation(viewPoint.getX() - distance, viewPoint.getY());
         break;
     }
+    this.revalidate();
+    this.repaint();
   }
 
   private void pan(char direction) {
