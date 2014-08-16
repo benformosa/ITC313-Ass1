@@ -14,7 +14,7 @@ Extract files, compile and run
 
 ```bash
 unzip 11429074_ass1.zip
-cd task2
+cd ITC313-Ass1-master/task2
 javac *.java
 java RectangleClient
 ```

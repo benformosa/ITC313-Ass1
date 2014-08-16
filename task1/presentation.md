@@ -19,7 +19,7 @@ Extract
 
 ```bash
 unzip 11429074_ass1.zip
-cd task1
+cd ITC313-Ass1-master/task1
 ```
 
 Compile and run using ant
