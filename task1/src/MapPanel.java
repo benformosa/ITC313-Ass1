@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -24,11 +25,11 @@ import poi.POIFactory;
 
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel {
+  private final static double MAX_SCALE = 100;
   private final static int MAX_SIZE = 100;
+  private final static double PAN_DISTANCE = 5;
   private final static int POINT_SIZE = 2;
-  private final static int PAN_DISTANCE = 1;
-  private final static int ZOOM_DISTANCE = 1;
-  private final static int MAX_SCALE = 100;
+  private final static double ZOOM_DISTANCE = 0.5;
 
   public static void main(String args[]) {
     EventQueue.invokeLater(new Runnable() {
@@ -46,20 +47,173 @@ public class MapPanel extends JPanel {
 
   private Map<String, Color> colors;
   private List<POI> poi;
-  private Point2D viewPoint = new Point(0, 0);
-  private int scale = 1;
   private File poiFile;
+  private double scale = 1;
   private File typeFile;
+  private Point2D viewPoint = new Point(0, 0);
 
-  public MapPanel(File poiFile, File typeFile) {
+  public MapPanel() {
     super(true);
     this.setPreferredSize(new Dimension(MAX_SIZE, MAX_SIZE));
+  }
+
+  public MapPanel(File poiFile, File typeFile) {
+    this();
     setTypeFile(typeFile);
     mapPOI(poiFile);
   }
 
   public MapPanel(String poiFilename, String typeFilename) {
     this(new File(poiFilename), new File(typeFilename));
+  }
+
+  /*
+   * create a mapping of Type name to a random color
+   */
+  public Map<String, Color> colorMap(File file) throws IOException {
+    Map<Integer, String> tm = POIFactory.typesMap(file);
+    Map<String, Color> cm = new HashMap<String, Color>();
+    Random rand = new Random();
+
+    Iterator<Map.Entry<Integer, String>> i = tm.entrySet().iterator();
+    while (i.hasNext()) {
+      Map.Entry<Integer, String> pairs = i.next();
+      Color c = new Color(rand.nextInt(256), rand.nextInt(256),
+          rand.nextInt(256));
+      String t = pairs.getValue();
+      cm.put(t, c);
+      i.remove();
+    }
+    return cm;
+  }
+
+  public Map<String, Color> colorMap(String filename) throws IOException {
+    return colorMap(new File(filename));
+  }
+
+  public Map<String, Color> getColorMap() {
+    return this.colors;
+  }
+
+  public BufferedImage getImage() throws IOException {
+    BufferedImage bi = new BufferedImage(this.getWidth(), this.getHeight(),
+        BufferedImage.TYPE_INT_RGB);
+    Graphics g = bi.createGraphics();
+
+    this.print(g);
+    g.dispose();
+    return bi;
+  }
+
+  /*
+   * Calculate a scale based on the distribution of points and the MAX_SIZE
+   * variable If points exist with x and y around 0 and others with x and y
+   * around MAX_SIZE, scale should be around 1.
+   */
+  public double getScale() {
+    Collections.sort(poi, POI.byX);
+    float minX = poi.get(0).x;
+    float maxX = poi.get(poi.size() - 1).x;
+    float rangeX = maxX - minX;
+
+    Collections.sort(poi, POI.byY);
+    float minY = poi.get(0).y;
+    float maxY = poi.get(poi.size() - 1).y;
+    float rangeY = maxY - minY;
+
+    double scale = Math.max(MAX_SIZE, MAX_SIZE) / Math.max(rangeX, rangeY);
+    return scale;
+  }
+
+  public void mapPOI() {
+    try {
+      poi = POIFactory.loadPOI(poiFile, typeFile);
+      colors = colorMap(typeFile);
+    } catch (IOException ex) {
+      System.err.println("failed reading from file");
+    }
+    this.revalidate();
+    this.repaint();
+  }
+
+  public void mapPOI(File poiFile) {
+    this.poiFile = poiFile;
+    mapPOI();
+  }
+
+  public void mapPOI(String poiFilename) {
+    this.poiFile = new File(poiFilename);
+    mapPOI();
+  }
+
+  public void newColors() throws IOException {
+    this.colors = colorMap(typeFile);
+  }
+
+  @Override
+  public void paintComponent(Graphics g) {
+    Graphics2D g2D = (Graphics2D) g.create();
+    g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        RenderingHints.VALUE_ANTIALIAS_ON);
+
+    // float scale = getScale();
+    g2D.scale((double) this.getWidth() / MAX_SIZE, (double) this.getHeight()
+        / MAX_SIZE);
+
+    for (POI p : poi) {
+      g2D.setColor(colors.get(p.getType()));
+
+      // g2D.drawString(p.getType(), p.x, (p.y - 1));
+      g2D.fill(new Ellipse2D.Double((p.x * scale) + viewPoint.getX(),
+          (p.y * scale) + viewPoint.getY(), POINT_SIZE * scale, POINT_SIZE
+              * scale));
+    }
+  }
+
+  private void pan(char direction) {
+    pan(direction, scale * PAN_DISTANCE);
+  }
+
+  private void pan(char direction, double distance) {
+    switch (direction) {
+      case 'n':
+        viewPoint.setLocation(viewPoint.getX(), viewPoint.getY() + distance);
+        break;
+      case 's':
+        viewPoint.setLocation(viewPoint.getX(), viewPoint.getY() - distance);
+        break;
+      case 'e':
+        viewPoint.setLocation(viewPoint.getX() - distance, viewPoint.getY());
+        break;
+      case 'w':
+        viewPoint.setLocation(viewPoint.getX() + distance, viewPoint.getY());
+        break;
+    }
+    this.revalidate();
+    this.repaint();
+  }
+
+  public void panE() {
+    pan('e');
+  }
+
+  public void panN() {
+    pan('n');
+  }
+
+  public void panS() {
+    pan('s');
+  }
+
+  public void panW() {
+    pan('w');
+  }
+
+  public void reset() {
+    scale = 1;
+    viewPoint.setLocation(0, 0);
+    this.revalidate();
+    this.repaint();
   }
 
   /*
@@ -78,100 +232,11 @@ public class MapPanel extends JPanel {
     this.typeFile = new File(typeFilename);
   }
 
-  public void mapPOI(String poiFilename) {
-    this.poiFile = new File(poiFilename);
-    mapPOI();
+  private void zoom(boolean in) {
+    zoom(in, ZOOM_DISTANCE);
   }
 
-  public void mapPOI(File poiFile) {
-    this.poiFile = poiFile;
-    mapPOI();
-  }
-
-  public void mapPOI() {
-    try {
-      poi = POIFactory.loadPOI(poiFile, typeFile);
-      colors = colorMap(typeFile);
-    } catch (IOException ex) {
-      System.err.println("failed reading from file");
-    }
-    this.revalidate();
-    this.repaint();
-  }
-
-  /*
-   * create a mapping of Type name to a random color
-   */
-  public Map<String, Color> colorMap(File file) throws IOException {
-    Map<Integer, String> tm = POIFactory.typesMap(file);
-    Map<String, Color> cm = new HashMap<String, Color>();
-    Random rand = new Random();
-
-    Iterator<Map.Entry<Integer, String>> i = tm.entrySet().iterator();
-    while (i.hasNext()) {
-      Map.Entry<Integer, String> pairs = i.next();
-      Color c = new Color(rand.nextInt(256), rand.nextInt(256),
-          rand.nextInt(256), rand.nextInt(256));
-      String t = pairs.getValue();
-      cm.put(t, c);
-      i.remove();
-    }
-    return cm;
-  }
-
-  public Map<String, Color> colorMap(String filename) throws IOException {
-    return colorMap(new File(filename));
-  }
-
-  /*
-   * Calculate a scale based on the distribution of points and the MAX_SIZE variable
-   * If points exist with x and y around 0 and others with x and y around MAX_SIZE, scale should be around 1.
-   */
-  public float getScale() {
-    Collections.sort(poi, POI.byX);
-    float minX = poi.get(0).x;
-    float maxX = poi.get(poi.size() - 1).x;
-    float rangeX = maxX - minX;
-
-    Collections.sort(poi, POI.byY);
-    float minY = poi.get(0).y;
-    float maxY = poi.get(poi.size() - 1).y;
-    float rangeY = maxY - minY;
-
-    float scale = Math.max(MAX_SIZE, MAX_SIZE) / Math.max(rangeX, rangeY);
-    return scale;
-  }
-
-  @Override
-  public void paintComponent(Graphics g) {
-    Graphics2D g2D = (Graphics2D) g.create();
-    g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        RenderingHints.VALUE_ANTIALIAS_ON);
-
-    // float scale = getScale();
-    g2D.scale((double) this.getWidth() / MAX_SIZE, (double) this.getHeight()
-        / MAX_SIZE);
-
-    for (POI p : poi) {
-      g2D.setColor(colors.get(p.getType()));
-
-      //g2D.drawString(p.getType(), p.x, (p.y - 1));
-      g2D.fill(new Ellipse2D.Float(
-            (p.x * scale) + (float) viewPoint.getX(),
-            (p.y * scale) + (float) viewPoint.getY(),
-            POINT_SIZE, POINT_SIZE));
-      // g2D.fill(new Ellipse2D.Float(p.x, p.y, POINT_SIZE, POINT_SIZE));
-    }
-  }
-
-  public void reset() {
-    scale = 1;
-    viewPoint.setLocation(0, 0);
-    this.revalidate();
-    this.repaint();
-  }
-
-  private void zoom(boolean in, int distance) {
+  private void zoom(boolean in, double distance) {
     if (in) {
       if ((scale + distance) < MAX_SCALE) {
         scale += distance;
@@ -179,14 +244,12 @@ public class MapPanel extends JPanel {
     } else {
       if ((scale - distance) >= 1) {
         scale -= distance;
+      } else {
+        reset();
       }
     }
     this.revalidate();
     this.repaint();
-  }
-
-  private void zoom(boolean in) {
-    zoom(in, ZOOM_DISTANCE);
   }
 
   public void zoomIn() {
@@ -195,44 +258,5 @@ public class MapPanel extends JPanel {
 
   public void zoomOut() {
     zoom(false);
-  }
-
-  private void pan(char direction, int distance) {
-    switch (direction) {
-      case 'n':
-        viewPoint.setLocation(viewPoint.getX(), viewPoint.getY() - distance);
-        break;
-      case 's':
-        viewPoint.setLocation(viewPoint.getX(), viewPoint.getY() + distance);
-        break;
-      case 'e':
-        viewPoint.setLocation(viewPoint.getX() + distance, viewPoint.getY());
-        break;
-      case 'w':
-        viewPoint.setLocation(viewPoint.getX() - distance, viewPoint.getY());
-        break;
-    }
-    this.revalidate();
-    this.repaint();
-  }
-
-  private void pan(char direction) {
-    pan(direction, scale * PAN_DISTANCE);
-  }
-
-  public void panN() {
-    pan('n');
-  }
-
-  public void panS() {
-    pan('s');
-  }
-
-  public void panE() {
-    pan('e');
-  }
-
-  public void panW() {
-    pan('w');
   }
 }
