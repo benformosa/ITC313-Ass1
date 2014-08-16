@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Ben Formosa 11429074" />
+  <title>ITC313-Assignment 1 Task 1</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  
+  
+  
+  
+</head>
+<body>
+<div id="header">
+<h1 class="title">ITC313-Assignment 1 Task 1</h1>
+<h2 class="author">Ben Formosa 11429074</h2>
+</div>
+<h1 id="pre-requisites">Pre-requisites</h1>
+<p>Requires <a href="http://opencsv.sourceforge.net">au.com.bytecode.opencsv.CSVReader</a>.<br />On Debian, install libopencsv-java and include /usr/share/java/opencsv.jar when compiling.</p>
+<h1 id="how-to-run">How to run</h1>
+<p>Extract</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">unzip</span> 11429074_ass1.zip
+<span class="kw">cd</span> task1</code></pre>
+<p>Compile and run using ant</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ant</span></code></pre>
+<p>Compile and run without ant</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> bin
+<span class="kw">javac</span> -d bin -classpath bin:/usr/share/java/opencsv.jar \
+  <span class="kw">-sourcepath</span> src src/interestmap/InterestMap.java
+<span class="kw">java</span> -classpath /usr/share/java/opencsv.jar:bin interestmap.InterestMap</code></pre>
+<h1 id="expected-output">Expected output</h1>
+<p>After running:<br /><img src="image/run.png" alt="Run" /></p>
+<p>Use the plus and minus <strong>+ -</strong> buttons to zoom in and out:<br /><img src="image/zoomin.png" alt="Zoom in" /></p>
+<p>Use the arrow <strong>↑ ↓ → ←</strong> buttons to pan around:<br /><img src="image/pan.png" alt="Pan" /></p>
+<p>Use the circle arrow <strong><span class="math">$\circlearrowright$</span> ↻</strong> button to reset the zoom and pan back to normal.</p>
+<p>Open a new file with the <em>File → Load Points of Interest</em> menu:<br /><img src="image/filemenu.png" alt="Load" /></p>
+<div class="figure">
+<img src="image/new.png" alt="New File" /><p class="caption">New File</p>
+</div>
+<p>Colours are generated randomly. Re-generate colours with the <em>Map → Change Colours</em>:<br /><img src="image/colors.png" alt="Colours" /></p>
+<p>Save the current view as an image with the <em>File → Save Image</em> menu:<br />For some reason this comes out with a black background!<br /><img src="image/image.png" alt="Saved" /></p>
+</body>
+</html>

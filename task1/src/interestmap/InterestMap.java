@@ -1,3 +1,5 @@
+package interestmap;
+
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -70,7 +72,7 @@ public class InterestMap extends JFrame implements ActionListener {
       }
     });
 
-    menuNewColors = new JMenuItem("Change colors", KeyEvent.VK_C);
+    menuNewColors = new JMenuItem("Change colours", KeyEvent.VK_C);
     menuNewColors.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {

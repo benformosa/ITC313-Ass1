@@ -11,14 +11,14 @@ public class POI extends Point2D.Float {
   public static Comparator<Point2D> byX = new Comparator<Point2D>() {
     @Override
     public int compare(Point2D a, Point2D b) {
-      if(a.getX() < b.getX()) {
+      if (a.getX() < b.getX()) {
         return -1;
-      } else if(a.getX() > b.getX()) {
+      } else if (a.getX() > b.getX()) {
         return 1;
       } else {
-        if(a.getY() < b.getY()) {
+        if (a.getY() < b.getY()) {
           return -1;
-        } else if(a.getY() > b.getY()) {
+        } else if (a.getY() > b.getY()) {
           return 1;
         } else {
           return 0;
@@ -33,14 +33,14 @@ public class POI extends Point2D.Float {
   public static Comparator<Point2D> byY = new Comparator<Point2D>() {
     @Override
     public int compare(Point2D a, Point2D b) {
-      if(a.getY() < b.getY()) {
+      if (a.getY() < b.getY()) {
         return -1;
-      } else if(a.getY() > b.getY()) {
+      } else if (a.getY() > b.getY()) {
         return 1;
       } else {
-        if(a.getX() < b.getX()) {
+        if (a.getX() < b.getX()) {
           return -1;
-        } else if(a.getX() > b.getX()) {
+        } else if (a.getX() > b.getX()) {
           return 1;
         } else {
           return 0;
@@ -62,9 +62,8 @@ public class POI extends Point2D.Float {
   }
 
   @Override
-public String toString() {
+  public String toString() {
     return String.format("%s, %f, %f", type, x, y);
   }
-
 
 }

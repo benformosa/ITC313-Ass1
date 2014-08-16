@@ -1,14 +1,11 @@
-<!--<project name="MapPanel" basedir="." default="main">-->
-<project name="InterestMap" basedir="." default="main">
+<project name="interestmap.InterestMap" basedir="." default="main">
   <property name="src.dir" value="src" />
   <property name="build.dir" value="bin" />
   <property name="lib.dir" value="/usr/share/java" />
-  <property name="classes.dir" value="${build.dir}/classes" />
-  <!--<property name="main-class"  value="MapPanel" />-->
   <property name="main-class"  value="InterestMap" />
 
   <path id="classpath">
-    <fileset dir="${lib.dir}" includes="*.jar" />
+    <pathelement location="${lib.dir}/opencsv.jar"/>
   </path>
 
   <target name="clean">
@@ -16,24 +13,15 @@
   </target>
 
   <target name="compile">
-    <mkdir dir="${classes.dir}" />
-    <javac includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
-  </target>
-
-  <target name="test" depends="compile">
-    <java classname="poi.POITester" fork="true">
-      <classpath>
-        <path refid="classpath" />
-        <path location="${classes.dir}" />
-      </classpath>
-    </java>
+    <mkdir dir="${build.dir}" />
+    <javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" classpathref="classpath" />
   </target>
 
   <target name="run" depends="compile">
     <java classname="${ant.project.name}" fork="true">
       <classpath>
         <path refid="classpath" />
-        <path location="${classes.dir}" />
+        <path location="${build.dir}" />
       </classpath>
     </java>
   </target>

@@ -1,3 +1,5 @@
+package interestmap;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -99,7 +101,7 @@ public class MapPanel extends JPanel {
     BufferedImage bi = new BufferedImage(this.getWidth(), this.getHeight(),
         BufferedImage.TYPE_INT_RGB);
     Graphics g = bi.createGraphics();
-
+    
     this.print(g);
     g.dispose();
     return bi;

@@ -25,9 +25,9 @@ public class POITester {
       System.out.println("maxY: " + maxY);
       System.out.println("rangeY: " + rangeY);
 
-      System.out.println(400/Math.max(rangeX, rangeY));
+      System.out.println(400 / Math.max(rangeX, rangeY));
 
-    } catch(IOException ex) {
+    } catch (IOException ex) {
     }
   }
 }

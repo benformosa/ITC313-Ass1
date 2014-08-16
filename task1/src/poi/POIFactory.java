@@ -19,16 +19,17 @@ public class POIFactory {
 
   }
 
-  public static POI createPOI(Map<Integer, String> types, int t, float x, float y) {
+  public static POI createPOI(Map<Integer, String> types, int t, float x,
+      float y) {
     String type = types.get(t);
-    if(type == null) {
+    if (type == null) {
       type = "";
     }
     return new POI(type, x, y);
   }
 
   public static POI createPOI(String filename, int t, float x, float y)
-    throws IOException {
+      throws IOException {
     return createPOI(new File(filename), t, x, y);
   }
 
@@ -37,7 +38,7 @@ public class POIFactory {
    * format of the POI csv is int Type, float X co-ordinate, float Y co-ordinate
    */
   public static List<POI> loadPOI(File poiFile, File typesFile)
-    throws FileNotFoundException, IOException {
+      throws FileNotFoundException, IOException {
     Map<Integer, String> types = typesMap(typesFile);
     List<POI> poi = new ArrayList<POI>();
 
@@ -73,7 +74,7 @@ public class POIFactory {
    * mapping
    */
   public static List<POI> loadPOI(String poiFilename, String typesFilename)
-    throws FileNotFoundException, IOException {
+      throws FileNotFoundException, IOException {
     return loadPOI(new File(poiFilename), new File(typesFilename));
   }
 
@@ -82,7 +83,7 @@ public class POIFactory {
    * int Key, String value
    */
   public static Map<Integer, String> typesMap(File typesFile)
-    throws IOException {
+      throws IOException {
     HashMap<Integer, String> types = new HashMap<Integer, String>();
 
     // Read in each line of the csv
@@ -106,7 +107,7 @@ public class POIFactory {
   }
 
   public static Map<Integer, String> typesMap(String filename)
-    throws FileNotFoundException, IOException {
+      throws FileNotFoundException, IOException {
     return typesMap(new File(filename));
   }
 }

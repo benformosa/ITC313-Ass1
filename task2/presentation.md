@@ -1,21 +1,31 @@
-# ITC313 Assignment 1 #
-## Task 2 ##
-### Ben Formosa ###
-### 11429074 ###
+---
+title: ITC313-Assignment 1 Task 2
+author: Ben Formosa 11429074
+header-includes:
+    - \usepackage{fancyhdr}
+    - \pagestyle{fancy}
+    - \fancyfoot[L]{Ben Formosa 11429074}
+    - \fancyfoot[C]{\thepage}
+---
 
-## How to run ##
-    # extract files
-    unzip 11429074_ass1.zip
-    cd task1
-    # compile
-    javac *.java
-    # run
-    java RectangleClient
+# How to run 
 
-## Expected output ##
-    Create Rectangle r
-    Set r's base to 8 and height to 6
-    r has an area of 20
-    Create Square s
-    Set s's base to 8
-    s has an area of 64
+Extract files, compile and run
+
+```bash
+unzip 11429074_ass1.zip
+cd task2
+javac *.java
+java RectangleClient
+```
+
+# Expected output #
+
+```
+Create Rectangle r
+Set r's base to 8 and height to 6
+r has an area of 20
+Create Square s
+Set s's base to 8
+s has an area of 64
+```
